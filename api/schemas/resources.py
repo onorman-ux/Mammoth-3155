@@ -1,11 +1,13 @@
-from datetime import datetime
+from decimal import Decimal
 from typing import Optional
-from pydantic import BaseModel
+
+from pydantic import BaseModel, ConfigDict
 
 
 class ResourceBase(BaseModel):
     item: str
-    amount: int
+    amount: Decimal
+    unit: str
 
 
 class ResourceCreate(ResourceBase):
@@ -14,11 +16,11 @@ class ResourceCreate(ResourceBase):
 
 class ResourceUpdate(BaseModel):
     item: Optional[str] = None
-    amount: Optional[int] = None
+    amount: Optional[Decimal] = None
+    unit: Optional[str] = None
 
 
 class Resource(ResourceBase):
     id: int
 
-    class ConfigDict:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
