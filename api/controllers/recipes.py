@@ -1,33 +1,57 @@
+from fastapi import HTTPException, Response, status
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, status, Response, Depends
-from ..models import models, schemas
 
-def create(db: Session, recipe):
-    db_recipe = models.Recipe(
-        sandwich_id=recipe.sandwich_id,
-        resource_id=recipe.resource_id,
-        recipe_amount=recipe.amount
-    )
-    db.add(db_recipe)
-    db.commit()
-    db.refresh(db_recipe)
-    return db_recipe
+from ..models import recipes as model
+
+MODEL = model.Recipe
+
+
+def _db_error(db, exc):
+    db.rollback()
+    detail = str(getattr(exc, "orig", exc))
+    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=detail)
+
+
+def create(db: Session, request):
+    item = MODEL(**request.model_dump())
+    try:
+        db.add(item)
+        db.commit()
+        db.refresh(item)
+        return item
+    except SQLAlchemyError as exc:
+        _db_error(db, exc)
+
 
 def read_all(db: Session):
-    return db.query(models.Recipe).all()
+    return db.query(MODEL).all()
 
-def read_one(db: Session, recipe_id):
-    return db.query(models.Recipe).filter(models.Recipe.id == recipe_id).first()
 
-def update(db: Session, recipe_id, recipe):
-    db_recipe = db.query(models.Recipe).filter(models.Recipe.id == recipe_id)
-    update_data = recipe.model_dump(exclude_unset=True)
-    db_recipe.update(update_data, synchronize_session=False)
-    db.commit()
-    return db_recipe.first()
+def read_one(db: Session, item_id: int):
+    item = db.query(MODEL).filter(MODEL.id == item_id).first()
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    return item
 
-def delete(db: Session, recipe_id):
-    db_recipe = db.query(models.Recipe).filter(models.Recipe.id == recipe_id)
-    db_recipe.delete(synchronize_session=False)
-    db.commit()
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+def update(db: Session, item_id: int, request):
+    item = read_one(db, item_id)
+    for key, value in request.model_dump(exclude_unset=True).items():
+        setattr(item, key, value)
+    try:
+        db.commit()
+        db.refresh(item)
+        return item
+    except SQLAlchemyError as exc:
+        _db_error(db, exc)
+
+
+def delete(db: Session, item_id: int):
+    item = read_one(db, item_id)
+    try:
+        db.delete(item)
+        db.commit()
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+    except SQLAlchemyError as exc:
+        _db_error(db, exc)
