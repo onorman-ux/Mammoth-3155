@@ -5,6 +5,7 @@ from . import (
     menu_items,
     recipes,
     promotions,
+    customers,
 )
 
 
@@ -15,3 +16,4 @@ def load_routes(app):
     app.include_router(menu_items.router)
     app.include_router(recipes.router)
     app.include_router(promotions.router)
+    app.include_router(customers.router)
