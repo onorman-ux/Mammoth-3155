@@ -2,9 +2,9 @@ from fastapi import HTTPException, Response, status
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from ..models import recipes as model
+from ..models import promotions as model
 
-MODEL = model.Recipe
+MODEL = model.Promotion
 
 
 def _db_error(db, exc):
