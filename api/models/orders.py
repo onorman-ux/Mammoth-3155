@@ -80,9 +80,8 @@ class Order(Base):
         cascade="all, delete-orphan",
     )
 
-    review = relationship(
+    reviews = relationship(
         "Review",
         back_populates="order",
-        uselist=False,
         cascade="all, delete-orphan",
     )
