@@ -22,14 +22,14 @@ def add_sample_data():
         patty = Resource(item="Beef Patty", amount=40, unit="pieces")
         cheese = Resource(item="Cheese Slice", amount=60, unit="slices")
         fries_resource = Resource(item="Fries", amount=25, unit="pounds")
-        salad = Resource(item="Salad", amount=20, unit="cups")
+        salad_resource = Resource(item="Salad", amount=20, unit="cups")
 
         db.add_all([
             bun,
             patty,
             cheese,
             fries_resource,
-            salad,
+            salad_resource,
         ])
         db.flush()
 
@@ -51,7 +51,7 @@ def add_sample_data():
             is_available=True
         )
 
-        salad = MenuItem(
+        garden_salad = MenuItem(
             name="Garden Salad",
             description="Fresh vegetarian salad",
             price=Decimal("7.99"),
@@ -60,7 +60,7 @@ def add_sample_data():
             is_available=True
         )
 
-        db.add_all([burger, fries, salad])
+        db.add_all([burger, fries, garden_salad])
         db.flush()
 
         db.add_all([
@@ -85,8 +85,8 @@ def add_sample_data():
                 amount=Decimal("0.50")
             ),
             Recipe(
-                menu_item_id=salad.id,
-                resource_id=salad.id,
+                menu_item_id=garden_salad.id,
+                resource_id=salad_resource.id,
                 amount=2
             )
         ])
