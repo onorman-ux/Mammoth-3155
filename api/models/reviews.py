@@ -46,7 +46,7 @@ class Review(Base):
 
     order = relationship(
         "Order",
-        back_populates="review",
+        back_populates="reviews",
     )
 
     customer = relationship(
