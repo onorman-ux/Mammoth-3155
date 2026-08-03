@@ -40,3 +40,20 @@ class Order(OrderBase):
     order_date: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class CheckoutItem(BaseModel):
+    menu_item_id: int
+    quantity: int
+    special_instructions: Optional[str] = None
+
+
+class CheckoutOrderCreate(BaseModel):
+    customer_id: Optional[int] = None
+    guest_name: Optional[str] = None
+    guest_email: Optional[str] = None
+    guest_phone: Optional[str] = None
+    order_type: str = "takeout"
+    delivery_address: Optional[str] = None
+    promo_code: Optional[str] = None
+    items: list[CheckoutItem]
