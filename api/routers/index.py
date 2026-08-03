@@ -8,6 +8,7 @@ from . import (
     customers,
     payments,
     reviews,
+    reports,
 )
 
 
@@ -21,3 +22,4 @@ def load_routes(app):
     app.include_router(customers.router)
     app.include_router(payments.router)
     app.include_router(reviews.router)
+    app.include_router(reports.router)
